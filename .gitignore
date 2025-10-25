@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv/
+
+# Crazyflie cache files
+cache/
+*.log
+*.csv
+
+# VS Code
+.vscode/
