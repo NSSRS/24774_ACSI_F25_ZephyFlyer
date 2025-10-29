@@ -25,3 +25,18 @@ Run the hover control demo to see the drone stabilize at 0.1m altitude:
 python simulation/hover_demo.py
 ```
 This script applies constant thrust based on the hover keyframe to keep the drone stable in the air
+
+#### 3. Keyboard Control (Interactive Manual Control)
+Fly the drone manually using keyboard controls:
+```bash
+python simulation/keyboard_control.py
+```
+
+**Keyboard Controls:**
+- **Arrow Keys**: Pitch (↑/↓) and Roll (←/→)
+- **W/S**: Increase/Decrease altitude (thrust)
+- **A/D**: Yaw left/right (rotation)
+- **Space**: Reset to hover position
+- **ESC**: Exit simulation
+
+The drone starts in hover mode, and you can add control inputs incrementally. Controls are damped for smooth flight.
