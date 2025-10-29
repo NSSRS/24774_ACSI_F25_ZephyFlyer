@@ -88,9 +88,60 @@ The test scripts assume the following hardware setup:
 
 ## File Organization
 
+### Hardware Test Scripts (tester_files/)
 - `tester_files/connect_cf.py`: Basic connection and interface scanning
 - `tester_files/test_flowdeck.py`: Scripted flight path demonstration using MotionCommander
 - `tester_files/flight_demo.py`: Interactive obstacle avoidance using multi-ranger deck
 - `tester_files/test_rangerdeck.py`: Duplicate of flight_demo.py for ranger deck testing
 
 Note: `flight_demo.py` and `test_rangerdeck.py` are identical implementations.
+
+### Simulation Scripts (simulation/)
+
+#### MuJoCo Environment
+The project includes a MuJoCo-based physics simulation for CrazyFlie 2.1 located in `simulation/crazyflie_sim/`:
+- `scene.xml`: Main simulation scene with ground plane and lighting
+- `cf2.xml`: CrazyFlie 2.1 drone model with actuators and sensors
+- `assets/`: 3D mesh files for visual and collision geometry
+
+The MuJoCo model uses a simplified control abstraction:
+- **4 actuators**: body_thrust, x_moment (roll), y_moment (pitch), z_moment (yaw)
+- **3 sensors**: gyroscope, accelerometer, orientation (quaternion)
+- **Hover keyframe**: Predefined hover state at 0.1m with thrust=0.26487N
+
+**Important**: This model uses direct force/moment control rather than individual motor RPM. Propellers in the visualization do not rotate - this is intentional for the simplified dynamics model.
+
+#### Simulation Scripts
+
+**Basic hover demonstration:**
+```bash
+python simulation/hover_demo.py
+```
+Demonstrates constant-thrust hover control using the predefined hover keyframe. The drone stabilizes at approximately 0.1m altitude.
+
+**Keyboard-controlled flight:**
+```bash
+python simulation/keyboard_control.py
+```
+Interactive manual control with keyboard inputs:
+- Arrow keys: Pitch (↑/↓) and Roll (←/→)
+- W/S: Altitude control (increase/decrease thrust)
+- A/D: Yaw rotation (left/right)
+- Space: Reset to hover state
+- ESC: Exit simulation
+
+Controls are incremental with automatic damping for smooth flight behavior.
+
+**Viewer-only mode (no control):**
+```bash
+python -m mujoco.viewer --mjcf simulation/crazyflie_sim/scene.xml
+```
+Launch MuJoCo's built-in viewer to inspect the model without running control scripts.
+
+#### Simulation Development Notes
+
+- All simulation scripts require `mujoco>=3.0.0` (see requirements.txt)
+- The keyboard controller uses increased gains for better visibility (moment_increment=0.001)
+- Debug output includes position, velocity, and all control deltas
+- The model is cross-platform: works on Windows, Linux, macOS
+- WSL2 users need X Server (VcXsrv) for graphics; native Windows recommended for best experience
