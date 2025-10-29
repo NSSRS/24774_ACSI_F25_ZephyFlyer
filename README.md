@@ -40,3 +40,18 @@ python simulation/keyboard_control.py
 - **ESC**: Exit simulation
 
 The drone starts in hover mode, and you can add control inputs incrementally. Controls are damped for smooth flight.
+
+#### 4. Cascade PID Control (Autonomous Position Control)
+Run the cascade PID controller to autonomously fly to a target position:
+```bash
+python simulation/cascade_pid_control.py
+```
+
+**Features:**
+- **Two-layer control**: Outer loop (position) + Inner loop (attitude)
+- **Motor mixing**: Simulates 4 individual motor thrusts with saturation handling
+- **Target position**: Default (0, 0, 0.5) meters - flies to 0.5m altitude
+- **Real-time feedback**: Position error, motor thrusts, saturation warnings
+- **Anti-windup**: PID integral protection to prevent overshoot
+
+The controller uses a cascade architecture where the outer loop computes desired attitude from position error, and the inner loop tracks that attitude. Motor allocation distributes forces/moments to 4 individual motors with proper saturation handling.
