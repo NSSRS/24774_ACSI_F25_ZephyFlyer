@@ -55,3 +55,20 @@ python simulation/cascade_pid_control.py
 - **Anti-windup**: PID integral protection to prevent overshoot
 
 The controller uses a cascade architecture where the outer loop computes desired attitude from position error, and the inner loop tracks that attitude. Motor allocation distributes forces/moments to 4 individual motors with proper saturation handling.
+
+#### 5. Improved Cascade PID (Enhanced Stability)
+Run the improved version with better stability and anti-windup:
+```bash
+python simulation/cascade_pid_improved.py
+```
+
+**Improvements over basic cascade PID:**
+- **Conditional integration**: Disables integral term when error > 0.5m to prevent windup
+- **Integral clamping**: Explicit limits on integral accumulation
+- **Reduced Ki gains**: Less aggressive integration (50-60% reduction)
+- **Tilt angle limiting**: Maximum 15° tilt to prevent extreme maneuvers
+- **Emergency reset**: Automatically resets PID on large errors (> 2m)
+- **Derivative filtering**: Low-pass filter on D-term to reduce noise amplification
+- **Enhanced diagnostics**: Detailed PID term logging and reset counter
+
+Use this version if the basic PID becomes unstable after extended runtime.
