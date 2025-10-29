@@ -46,8 +46,8 @@ class KeyboardController:
             self.hover_ctrl = np.array([hover_thrust, 0.0, 0.0, 0.0])
 
         # Control increments for keyboard input
-        self.thrust_increment = 0.01      # Vertical thrust adjustment
-        self.moment_increment = 0.0001    # Roll/pitch/yaw moment adjustment
+        self.thrust_increment = 0.02      # Vertical thrust adjustment (increased for visibility)
+        self.moment_increment = 0.001     # Roll/pitch/yaw moment adjustment (10x increase)
 
         # Current control deltas (added to hover control)
         self.thrust_delta = 0.0
@@ -136,13 +136,13 @@ class KeyboardController:
         self.thrust_delta = np.clip(self.thrust_delta, -max_thrust_delta, max_thrust_delta)
 
         # Clamp moment deltas to prevent excessive rotation
-        max_moment_delta = 0.01
+        max_moment_delta = 0.5  # Increased from 0.01 for more visible control
         self.roll_delta = np.clip(self.roll_delta, -max_moment_delta, max_moment_delta)
         self.pitch_delta = np.clip(self.pitch_delta, -max_moment_delta, max_moment_delta)
         self.yaw_delta = np.clip(self.yaw_delta, -max_moment_delta, max_moment_delta)
 
         # Apply damping to gradually reduce control deltas when keys are released
-        damping_factor = 0.98
+        damping_factor = 0.95  # Slightly faster damping for more responsive feel
         if 263 not in self.key_pressed and 262 not in self.key_pressed:
             self.roll_delta *= damping_factor
         if 265 not in self.key_pressed and 264 not in self.key_pressed:
@@ -223,10 +223,14 @@ def main():
             # Print drone state periodically
             if data.time - last_print_time >= print_interval:
                 position = data.qpos[0:3]  # x, y, z position
-                orientation = data.qpos[3:7]  # quaternion
+                velocity = data.qvel[0:3]  # linear velocity
                 print(f"Time: {data.time:6.2f}s | "
-                      f"Pos (x,y,z): [{position[0]:6.3f}, {position[1]:6.3f}, {position[2]:6.3f}] | "
-                      f"Thrust Δ: {controller.thrust_delta:7.4f}")
+                      f"Pos: [{position[0]:6.3f}, {position[1]:6.3f}, {position[2]:6.3f}] | "
+                      f"Vel: [{velocity[0]:6.3f}, {velocity[1]:6.3f}, {velocity[2]:6.3f}] | "
+                      f"Ctrl: T={controller.thrust_delta:6.3f} "
+                      f"R={controller.roll_delta:6.3f} "
+                      f"P={controller.pitch_delta:6.3f} "
+                      f"Y={controller.yaw_delta:6.3f}")
                 last_print_time = data.time
 
     print("\nSimulation ended.")
