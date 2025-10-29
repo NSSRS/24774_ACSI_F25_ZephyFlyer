@@ -1,0 +1,4 @@
+Imported from https://github.com/google-deepmind/mujoco_menagerie (subdir: bitcraze_crazyflie_2)
+Commit: 1f2300d
+Date: 2025-10-25
+Imported into ZephyFlyer/simulation/crazyflie_sim

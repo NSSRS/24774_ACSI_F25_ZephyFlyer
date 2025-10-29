@@ -13,3 +13,4 @@ cache/
 
 # VS Code
 .vscode/
+MUJOCO_LOG.TXT
