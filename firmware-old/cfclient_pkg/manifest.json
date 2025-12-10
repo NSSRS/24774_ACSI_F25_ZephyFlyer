@@ -1,0 +1,10 @@
+{
+  "firmwares": [
+    {
+      "platform": "cf2",
+      "files": {
+        "bin": "cf2.bin"
+      }
+    }
+  ]
+}

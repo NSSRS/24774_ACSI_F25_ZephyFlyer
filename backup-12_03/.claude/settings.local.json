@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout:*)",
+      "Bash(python3:*)",
+      "Bash(dpkg:*)",
+      "Bash(apt-cache search:*)",
+      "Bash(git add:*)",
+      "Bash(source setup_env.sh)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(pip install:*)",
+      "Bash(python simulation/hover_demo.py:*)",
+      "Read(//usr/lib/**)",
+      "Bash(glxinfo:*)",
+      "Read(//home/hanzel/**)",
+      "Bash(source ~/.bashrc)",
+      "Bash(echo:*)",
+      "Read(//mnt/wsl/**)",
+      "Bash(export DISPLAY=172.26.32.1:0.0)",
+      "Bash(ping:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd MuJoCo hover simulation for CrazyFlie 2.1\n\n- Added hover_demo.py: basic hover control script with constant thrust\n- Updated requirements.txt: added mujoco>=3.0.0 dependency\n- Updated README.md: added simulation setup and usage instructions\n- Fixed setup_env.sh: changed python to python3 for compatibility\n- Added CLAUDE.md: project documentation and guidelines\n- Updated .gitignore: ignore MUJOCO_LOG.TXT\n\nThe hover demo applies constant thrust from the predefined hover keyframe\nto keep the drone stable at approximately 0.1m altitude with real-time\nposition feedback.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.bitcraze.io)",
+      "Bash(git clone:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:cyberbotics.com)",
+      "Bash(snap --version:*)",
+      "Bash(sudo snap install:*)",
+      "Bash(wslpath:*)",
+      "Bash(cp:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

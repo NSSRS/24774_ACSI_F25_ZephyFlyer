@@ -1,0 +1,80 @@
+ROLE:
+You are assisting with a UAV simulator controller. DO NOT refactor or reorganize code. Only ADD the smallest possible lines to keep XY position under constant wind. Keep the existing inner-loop “velocity + fixed height PID” EXACTLY as-is. Keep z-axis and yaw logic EXACTLY as-is.
+
+GOAL (minimal change):
+Add a very small XY outer loop that converts position error → desired body-frame velocities, then pass them to the existing inner-loop. Include a tiny low-pass on measured velocity and simple anti-windup. Nothing else.
+
+WHAT TO ADD (only these pieces):
+
+(1) Params (near other gains):
+Kp_xy = 6.000E-01      # [1/s]
+Kd_xy = 3.000E-01      # [-]
+Ki_xy = 5.000E-02      # [1/s^2]
+v_xy_max = 3.000E-01   # [m/s]
+tau_v = 1.000E-01      # [s] low-pass for velocity
+
+# integrators & filters (init to 0 once)
+int_ep_x = 0.0
+int_ep_y = 0.0
+vx_f, vy_f = 0.0, 0.0
+
+(2) Each control step (keep your existing state reads):
+# desired point (x_d, y_d, z_d) already defined; yaw psi known
+# measured (x_w, y_w) and (v_wx, v_wy) from finite diff or sim
+
+# position error in world
+ep_x_w = x_d - x_w
+ep_y_w = y_d - y_w
+
+# rotate world → body using yaw psi (keep your convention)
+c = math.cos(psi); s = math.sin(psi)
+ep_x_b =  ep_x_w * c + ep_y_w * s
+ep_y_b = -ep_x_w * s + ep_y_w * c
+
+# body-frame velocity (rotate world vel)
+vxb =  v_wx * c + v_wy * s
+vyb = -v_wx * s + v_wy * c
+
+# low-pass velocity
+alpha = math.exp(-dt / tau_v)
+vx_f = alpha * vx_f + (1.0 - alpha) * vxb
+vy_f = alpha * vy_f + (1.0 - alpha) * vyb
+
+# integrate position error (for constant-wind rejection)
+int_ep_x += ep_x_b * dt
+int_ep_y += ep_y_b * dt
+
+# PD(+I): position → desired body-frame velocity
+fwd_cmd  = Kp_xy * ep_x_b - Kd_xy * vx_f + Ki_xy * int_ep_x
+side_cmd = Kp_xy * ep_y_b - Kd_xy * vy_f + Ki_xy * int_ep_y
+
+# saturate
+def clip(u, m): return max(-m, min(m, u))
+fwd_cmd  = clip(fwd_cmd,  v_xy_max)
+side_cmd = clip(side_cmd, v_xy_max)
+
+# simple anti-windup: if saturated and pushing further, undo this step’s integral
+if abs(fwd_cmd) >= v_xy_max and (fwd_cmd * ep_x_b) > 0.0:
+    int_ep_x -= ep_x_b * dt
+if abs(side_cmd) >= v_xy_max and (side_cmd * ep_y_b) > 0.0:
+    int_ep_y -= ep_y_b * dt
+
+# pass to your EXISTING inner-loop (unchanged)
+motor_cmd = pid_velocity_fixed_height_controller(
+    forward_desired  = fwd_cmd,     # [m/s]
+    sideways_desired = side_cmd,    # [m/s]
+    yawrate_desired  = 0.0,
+    z_desired        = z_d
+)
+
+(3) Tuning (only if needed, keep small changes):
+- Start: Kp_xy=6.000E-01, Kd_xy=3.000E-01, Ki_xy=5.000E-02, v_xy_max=3.000E-01 m/s, tau_v=1.000E-01 s.
+- If overshoot/jitter: slightly raise Kd_xy or tau_v to 2.000E-01 s.
+- If steady offset under wind: raise Ki_xy to 7.000E-02 1/s^2.
+
+RESTRICTIONS:
+- Do NOT change z-axis or yaw control.
+- Do NOT modify inner-loop implementation or signatures.
+- Do NOT refactor files or rename symbols.
+- Only insert the above lines at obvious spots (params/init; main control loop).
+

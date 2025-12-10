@@ -1,0 +1,7 @@
+# Core Crazyflie control library
+cflib>=0.1.17
+
+# Optional but recommended for plotting / analysis
+numpy
+matplotlib
+pyyaml

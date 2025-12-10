@@ -1,0 +1,37 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "../protos/Crazyflie.proto"
+
+WorldInfo {
+  info [
+    "CrazyFlie Wind Testing Environment"
+    "This world includes a wind supervisor for centralized disturbance management"
+  ]
+  title "CrazyFlie with Wind Supervisor"
+  basicTimeStep 8
+  FPS 30
+}
+Viewpoint {
+  orientation -0.15015774849740857 0.950999073816921 0.27028394729533545 1
+  position -1.5 -1 2.5
+  follow "Crazyflie"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+}
+Robot {
+  name "WindController"
+  controller "crazyflie_tinympc"
+  supervisor TRUE
+}
+DEF Crazyflie Crazyflie {
+  rotation 1 0 0 0
+  controller "crazyflie_eso"
+  supervisor TRUE
+}

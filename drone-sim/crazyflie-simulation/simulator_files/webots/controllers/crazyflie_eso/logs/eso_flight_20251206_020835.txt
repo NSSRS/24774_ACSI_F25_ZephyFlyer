@@ -1,0 +1,1 @@
+# t    gps_x  gps_y  gps_z    eso_x  eso_y  eso_z    eso_vx eso_vy eso_vz   eso_roll eso_pitch eso_yaw   imu_roll imu_pitch imu_yaw   target_x target_y target_z   m1 m2 m3 m4

@@ -1,0 +1,30 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "../protos/Crazyflie.proto"
+
+WorldInfo {
+  basicTimeStep 8
+  FPS 30
+}
+Viewpoint {
+  orientation -0.05034105534660294 -0.09724583937210723 -0.9939864309292179 0.7563425521969688
+  position -2.763085443481249 1.4957668911000008 0.10104054163134457
+  follow "Crazyflie"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+}
+Crazyflie {
+  hidden linearVelocity_0 -0.0004165532080007942 0.0005125704567411556 9.261234506395205e-06
+  hidden angularVelocity_0 -0.02562853700906698 -0.020827666164947717 -433.4311358844232
+  translation -0.00025061654485596503 0.0002742958018781157 0.019992618742455674
+  rotation -4.027954755418699e-06 -1.684908191861528e-05 0.999999999849942 -2.4335046421466084
+  controller "crazyflie_lqr"
+  supervisor TRUE
+}
