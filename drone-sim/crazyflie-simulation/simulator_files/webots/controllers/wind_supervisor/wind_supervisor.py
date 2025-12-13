@@ -1,5 +1,6 @@
 """
-Wind Supervisor Controller with Debug Prints + Visual Arrow.
+Wind Supervisor Controller - Fully Automatic Timer Control (5s to 20s)
+Displays debug prints and a visual wind arrow.
 """
 
 from controller import Supervisor, Keyboard
@@ -16,27 +17,27 @@ if __name__ == '__main__':
         print("❌ ERROR: DEF Crazyflie not found")
         sys.exit(1)
 
-    keyboard = Keyboard()
-    keyboard.enable(timestep)
-
-    # ============================
+    # --- Wind Configuration ---
+    # Wind starts at 5.0 seconds
+    WIND_START_TIME = 5.0
+    # Wind stops at 20.0 seconds
+    WIND_END_TIME = 20.0
+    
     # Wind State
-    # ============================
     wind_enabled = False
     wind_force = [0.0, 0.0, 0.0]
-    wind_magnitude = 0.03   # default 30mN
+    wind_magnitude = 0.03   # Force magnitude (30mN)
+    
 
-    print("\n=== WIND SUPERVISOR READY ===")
-    print("Keys:")
-    print("  V = toggle wind")
-    print("  7/8/9/0 = set horizontal wind dir")
-    print("  B = activate wind from 6→12 (world −X)")
-    print("  C = clear wind")
-    print("  ,/. = change magnitude\n")
+    WIND_DIRECTION = [-wind_magnitude, 0.0, 0.0]
 
-    # ============================
-    # Create Wind Arrow (VRML)
-    # ============================
+ 
+
+    print("\n=== WIND SUPERVISOR READY (Automatic Mode) ===")
+    print(f"[CONFIG] Wind will start at t={WIND_START_TIME}s and stop at t={WIND_END_TIME}s.")
+    print(f"[CONFIG] Wind Force: {wind_magnitude}N in world -X direction (Fx={WIND_DIRECTION[0]:+.3f})\n")
+
+
     root = supervisor.getRoot()
     children = root.getField("children")
 
@@ -67,7 +68,7 @@ if __name__ == '__main__':
     wind_arrow.getField("translation").setSFVec3f([0, -10, 0])
 
     # ============================
-    # UPDATE VISUAL ARROW
+    # UPDATE VISUAL ARROW 
     # ============================
     def update_arrow(force_vector):
         Fx, Fy, Fz = force_vector
@@ -102,59 +103,27 @@ if __name__ == '__main__':
     # ============================
     # MAIN LOOP
     # ============================
+    start_time = supervisor.getTime()
+
     while supervisor.step(timestep) != -1:
 
-        key = keyboard.getKey()
+        current_time = supervisor.getTime() - start_time
 
-        while key > 0:
+        # --------------------------------------------------
+        # AUTO WIND ACTIVATION (Start at 5s, Stop at 20s)
+        # --------------------------------------------------
+        
 
-            # --------------------------------------------------
-            # Toggle wind
-            # --------------------------------------------------
-            if key == ord('V') or key == ord('v'):
-                wind_enabled = not wind_enabled
-                print("Wind:", "ENABLED" if wind_enabled else "DISABLED")
+        if current_time >= WIND_START_TIME and current_time < WIND_END_TIME and not wind_enabled:
+            wind_enabled = True
+            wind_force = WIND_DIRECTION
+            print(f"\n🌬️ AUTO-WIND ACTIVATED at t = {current_time:.2f}s (Target Start: {WIND_START_TIME}s)")
+            
 
-            # --------------------------------------------------
-            # ORIGINAL B MODE — 6→12 wind (world −X)
-            # --------------------------------------------------
-            elif key == ord('B') or key == ord('b'):
-                wind_enabled = True
-                wind_force = [-wind_magnitude, 0.0, 0.0]
-                print("\n🌬️  B-MODE WIND ACTIVATED")
-                print("     Direction: 6 → 12 (world −X)")
-                print(f"     Force: Fx={wind_force[0]:+.3f}\n")
-
-            # --------------------------------------------------
-            # Direction controls
-            # --------------------------------------------------
-            elif key == ord('7'): wind_force = [ wind_magnitude, 0, 0 ]
-            elif key == ord('8'): wind_force = [ 0, wind_magnitude, 0 ]
-            elif key == ord('9'): wind_force = [-wind_magnitude, 0, 0 ]
-            elif key == ord('0'): wind_force = [ 0, -wind_magnitude, 0 ]
-
-            elif key == ord('-'): wind_force = [ 0, 0,  wind_magnitude ]
-            elif key == ord('+') or key == ord('='): wind_force = [ 0, 0, -wind_magnitude ]
-
-            # --------------------------------------------------
-            # Magnitude adjust
-            # --------------------------------------------------
-            elif key == ord(','):
-                wind_magnitude = max(0.005, wind_magnitude - 0.005)
-                print("Wind magnitude:", wind_magnitude)
-
-            elif key == ord('.'):
-                wind_magnitude = min(0.5, wind_magnitude + 0.005)
-                print("Wind magnitude:", wind_magnitude)
-
-            # --------------------------------------------------
-            # Clear wind
-            # --------------------------------------------------
-            elif key == ord('C') or key == ord('c'):
-                wind_force = [0,0,0]
-                print("Wind cleared")
-
-            key = keyboard.getKey()
+        elif current_time >= WIND_END_TIME and wind_enabled:
+            wind_enabled = False
+            wind_force = [0.0, 0.0, 0.0]
+            print(f"\n🛑 AUTO-WIND DEACTIVATED at t = {current_time:.2f}s (Target End: {WIND_END_TIME}s)\n")
 
         # --------------------------------------------------
         # Apply wind + update arrow
@@ -163,4 +132,5 @@ if __name__ == '__main__':
             crazyflie.addForce(wind_force, False)
             update_arrow(wind_force)
         else:
+
             wind_arrow.getField("translation").setSFVec3f([0, -10, 0])
