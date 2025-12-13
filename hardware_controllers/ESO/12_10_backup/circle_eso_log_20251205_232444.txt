@@ -1,0 +1,1 @@
+t	x	y	z	roll	pitch	yaw	g_x	g_y	g_z	thrust	eso_x	eso_y	eso_z	dist_x	dist_y	dist_z
