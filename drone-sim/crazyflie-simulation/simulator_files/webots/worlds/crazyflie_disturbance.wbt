@@ -1,4 +1,4 @@
-#VRML_SIM R2023b utf8
+#VRML_SIM R2025a utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
@@ -21,6 +21,8 @@ TexturedBackgroundLight {
 Floor {
 }
 Crazyflie {
-  controller "crazyflie_lqr"
+  hidden linearVelocity_0 0 0 -0.0017541068519100805
+  translation 0 0 0.5022968689054337
+  controller "crazyflie_eso"
   supervisor TRUE
 }

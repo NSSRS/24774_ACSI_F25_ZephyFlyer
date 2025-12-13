@@ -1,4 +1,4 @@
-#VRML_SIM R2023b utf8
+#VRML_SIM R2025a utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
@@ -24,14 +24,21 @@ TexturedBackground {
 TexturedBackgroundLight {
 }
 Floor {
+  size 10 10
 }
+
+# Wind Supervisor - Controls wind forces independently
 Robot {
   name "WindController"
-  controller "crazyflie_tinympc"
+  controller "wind_supervisor"
   supervisor TRUE
+  children []
 }
+
+# CrazyFlie Drone - Uses any controller (ESO, PID, TinyMPC, LQR, etc.)
 DEF Crazyflie Crazyflie {
+  translation 0 0 0.015
   rotation 1 0 0 0
-  controller "crazyflie_eso"
+  controller "crazyflie_lqr_c"
   supervisor TRUE
 }
