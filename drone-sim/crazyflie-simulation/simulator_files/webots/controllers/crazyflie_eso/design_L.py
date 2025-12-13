@@ -56,14 +56,14 @@ def compute_L(eso, mass):
     # ============================================
     # MANUAL TUNING KNOBS
     # ============================================
-    observer_speedup = 1.0
-    position_scale = 0.2
-    velocity_scale = 0.3
-    attitude_scale = 0.2      # New!
-    force_dist_scale = 0.1
+    observer_speedup = 3   # 原来 1.0，大幅加快整体带宽
+    position_scale   = 0.5     # 原来 0.2
+    velocity_scale   = 0.8     # 原来 0.3
+    attitude_scale   = 0.7     # 原来 0.2
+    force_dist_scale = 0.5    # 原来 0.1 专门加快扰动估计
     
-    gps_noise = 0.05
-    imu_noise = 0.02          # New!
+    gps_noise = 0.1
+    imu_noise = 0.1          # New!
     # ============================================
     
     print(f"Tuning: speedup={observer_speedup}, vel_scale={velocity_scale}, att_scale={attitude_scale}")
@@ -140,7 +140,7 @@ def compute_L(eso, mass):
         L[0:3, 0:3] = 2.0 * eso.Ts * np.eye(3)   # pos from GPS
         L[3:6, 0:3] = 3.0 * eso.Ts * np.eye(3)   # vel from GPS
         L[6:9, 3:6] = 2.0 * eso.Ts * np.eye(3)   # att from IMU
-        L[9:12, 0:3] = 0.5 * eso.Ts * np.eye(3)  # dist from GPS
+        L[9:12, 0:3] = 20 * eso.Ts * np.eye(3)  # dist from GPS
         
         print(f"Fallback max gain: {np.max(np.abs(L)):.2f}")
         print("="*60 + "\n")
